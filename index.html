@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">CannaBarna — Barcelona's local vape &amp; CBD shop</title>
+<meta id="pageDescription" name="description" content="Curated vapes, e-liquids, CBD and smoke-shop essentials. No tourist markup. Tap any product to check price and availability.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F2EADC;
+    --surface:#FAF6EE;
+    --text:#211D1A;
+    --text-muted:rgba(33,29,26,.7);
+    --text-faint:rgba(33,29,26,.45);
+    --border:#DCCFB8;
+    --accent:#B3552F;
+    --accent-strong:#8A3F22;
+    --accent-2:#CBFF3D;
+    --on-accent:#FAF6EE;
+    --scrim:rgba(33,29,26,.92);
+    --radius:3px;
+    --maxw:1240px;
+  }
+
+  :root[data-theme="dark"]{
+    --bg:#181310;
+    --surface:#221B16;
+    --text:#F1E6D3;
+    --text-muted:rgba(241,230,211,.68);
+    --text-faint:rgba(241,230,211,.42);
+    --border:#3B2E22;
+    --accent:#E08A55;
+    --accent-strong:#F2A876;
+    --accent-2:#C6F24A;
+    --on-accent:#181310;
+    --scrim:rgba(8,6,5,.88);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .25s ease,color .25s ease;
+    touch-action:manipulation;
+  }
+  h1,h2,.display{
+    font-family:'Space Grotesk',-apple-system,sans-serif;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  body.locked{overflow:hidden;}
+  img{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+
+  /* ---------- Age gate ---------- */
+  #ageGate{
+    position:fixed;inset:0;z-index:100;
+    background:var(--scrim);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    animation:fadeIn .35s ease;
+  }
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  #ageGate.hidden{display:none;}
+  .gate-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    max-width:380px;
+    width:100%;
+    padding:32px 28px;
+    text-align:center;
+  }
+  .gate-card p{
+    font-size:15px;line-height:1.5;color:var(--text-muted);
+    margin:0 0 22px;
+  }
+  .gate-card .gate-question{
+    font-family:'Space Grotesk';font-weight:600;font-size:20px;
+    color:var(--text);margin:0 0 10px;
+  }
+  .gate-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .gate-btn{
+    padding:11px 22px;border-radius:var(--radius);border:1px solid var(--text);
+    cursor:pointer;font-size:14px;font-weight:500;transition:background .15s,color .15s,border-color .15s;
+  }
+  .gate-btn.yes{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+  .gate-btn.yes:hover{background:var(--accent-strong);border-color:var(--accent-strong);}
+  .gate-btn.no{background:transparent;color:var(--text);}
+  .gate-btn.no:hover{background:var(--text);color:var(--bg);}
+  .gate-blocked{display:none;}
+  .gate-blocked.show{display:block;}
+  .gate-blocked p{margin:0;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:var(--bg);
+    border-bottom:1px solid var(--border);
+    transition:background .25s ease,border-color .25s ease;
+  }
+  .header-inner{
+    max-width:var(--maxw);margin:0 auto;
+    padding:16px 20px 14px;
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .brand-block{display:flex;flex-direction:column;gap:4px;}
+  .logo{
+    font-size:26px;font-weight:700;letter-spacing:-0.02em;
+    display:flex;align-items:baseline;
+  }
+  .logo .mosaic-b{
+    background-image:repeating-conic-gradient(from 0deg,
+      var(--accent) 0deg 90deg,
+      var(--accent-2) 90deg 180deg,
+      var(--bg) 180deg 270deg,
+      var(--text) 270deg 360deg);
+    background-size:7px 7px;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .tagline{
+    font-size:13px;color:var(--text-muted);max-width:340px;line-height:1.4;
+    margin:0;
+  }
+  @media(max-width:480px){.tagline{display:none;}}
+
+  /* ---------- Header controls: language + theme ---------- */
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+  .lang-switch{position:relative;}
+  .pill-btn{
+    display:flex;align-items:center;gap:6px;
+    padding:10px 14px;border-radius:999px;
+    border:1px solid var(--text-faint);
+    background:var(--surface);color:var(--text);
+    font-size:13px;font-weight:600;cursor:pointer;
+    transition:border-color .15s,background .15s;
+  }
+  .pill-btn:hover{border-color:var(--accent);}
+  .pill-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
+  .caret{width:9px;height:9px;transition:transform .15s;}
+  .lang-switch.open .caret{transform:rotate(180deg);}
+  .lang-menu{
+    position:absolute;top:calc(100% + 6px);right:0;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--radius);
+    min-width:150px;
+    box-shadow:0 6px 20px rgba(0,0,0,.18);
+    display:none;
+    overflow:hidden;
+    z-index:30;
+  }
+  .lang-switch.open .lang-menu{display:block;}
+  .lang-option{
+    display:block;width:100%;text-align:left;
+    padding:10px 14px;border:none;background:transparent;color:var(--text);
+    font-size:13.5px;cursor:pointer;transition:background .12s;
+  }
+  .lang-option:hover{background:var(--bg);}
+  .lang-option.active{color:var(--accent-strong);font-weight:600;}
+  .theme-btn svg{width:15px;height:15px;stroke:var(--text);}
+
+  /* ---------- Mosaic divider ---------- */
+  .mosaic-strip{width:100%;height:10px;display:block;}
+
+  /* ---------- Trust / pillar badges ---------- */
+  .badge-row{
+    max-width:var(--maxw);margin:0 auto;
+    padding:14px 20px 0;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  @media(min-width:700px){
+    .badge-row{grid-template-columns:repeat(4,1fr);gap:14px;}
+  }
+  .badge-item{
+    display:flex;align-items:center;gap:9px;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+  }
+  .badge-item svg{width:16px;height:16px;flex:0 0 auto;stroke:var(--accent);}
+  .badge-item span{font-size:12px;line-height:1.25;color:var(--text-muted);font-weight:500;}
+
+  /* ---------- Filter chips ---------- */
+  .chip-row{
+    max-width:var(--maxw);margin:0 auto;
+    padding:16px 20px 4px;
+    display:flex;gap:8px;overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .chip-row::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;
+    padding:10px 16px;
+    border-radius:999px;
+    border:1px solid var(--text-faint);
+    font-size:13.5px;font-weight:500;
+    background:transparent;color:var(--text-muted);
+    cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+    white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--text);color:var(--text);}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+  .chip:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
+
+  /* ---------- Product grid ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:20px 20px 8px;}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+    gap:14px;
+  }
+  @media(min-width:600px){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:20px;}
+  }
+
+  .card{
+    display:block;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+    background:var(--surface);
+    cursor:pointer;
+    transition:border-color .18s,background .25s ease;
+  }
+  .card:hover,.card:focus-visible{border-color:var(--accent);}
+  .card:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
+  .card-photo{
+    position:relative;
+    aspect-ratio:4/5;
+    overflow:hidden;
+    background:var(--border);
+  }
+  .card-photo img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .3s ease;
+  }
+  .card:hover .card-photo img{transform:scale(1.04);}
+  .card-tag{
+    position:absolute;top:8px;left:8px;
+    background:var(--text);color:var(--bg);
+    font-size:10.5px;font-weight:500;
+    padding:3px 8px;border-radius:999px;
+    letter-spacing:.01em;
+  }
+  .card-new-tag{
+    position:absolute;top:8px;right:8px;
+    background:var(--accent-2);color:var(--on-accent);
+    font-size:10.5px;font-weight:600;
+    padding:3px 8px;border-radius:999px;
+    letter-spacing:.01em;
+  }
+  .card-body{padding:11px 12px 14px;}
+  .card-name{
+    font-family:'Space Grotesk';font-weight:600;font-size:14.5px;
+    line-height:1.25;margin:0 0 4px;color:var(--text);
+  }
+  .card-blurb{
+    font-size:12.5px;line-height:1.35;color:var(--text-muted);margin:0;
+  }
+
+  /* ---------- Ask-us note ---------- */
+  .ask-us{
+    margin:30px 0 10px;
+    padding:18px 20px;
+    border:1px dashed var(--text-faint);
+    border-radius:var(--radius);
+    text-align:center;
+    font-size:13.5px;color:var(--text-muted);
+  }
+  .ask-us a{
+    color:var(--accent-strong);font-weight:600;
+    border-bottom:1px solid var(--accent-strong);
+  }
+
+  /* ---------- Footer ---------- */
+  footer{
+    max-width:var(--maxw);margin:0 auto;
+    padding:34px 20px 40px;
+    border-top:1px solid var(--border);
+    margin-top:30px;
+  }
+  .footer-neighborhoods{
+    font-family:'Space Grotesk';font-weight:600;font-size:14px;
+    margin:0 0 12px;color:var(--text);
+  }
+  .footer-legal{
+    font-size:11.5px;line-height:1.6;color:var(--text-faint);
+    max-width:640px;margin:0;
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body class="locked">
+
+  <!-- ================= AGE GATE ================= -->
+  <div id="ageGate">
+    <div class="gate-card">
+      <div id="gateAsk">
+        <p class="gate-question" id="gateQuestionText">Are you 18 or older?</p>
+        <p id="gateSubText">This site lists vaping, CBD and smoking accessories for adults.</p>
+        <div class="gate-actions">
+          <button class="gate-btn yes" id="gateYes">Yes, I'm 18+</button>
+          <button class="gate-btn no" id="gateNo">No</button>
+        </div>
+      </div>
+      <div id="gateBlocked" class="gate-blocked">
+        <p class="gate-question" id="gateBlockedTitleText">Sorry about that.</p>
+        <p id="gateBlockedTextText">This shop is for adults 18 and over — come back when you are.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="header-inner">
+      <div class="brand-block">
+        <div class="logo">Canna<span class="mosaic-b">B</span>arna</div>
+        <p class="tagline" id="taglineText">Barcelona's local vape and CBD shop — no tourist markup, no dusty stock.</p>
+      </div>
+
+      <div class="controls">
+        <div class="lang-switch" id="langSwitch">
+          <button class="pill-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">
+            <span id="langBtnLabel">EN</span>
+            <svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="lang-menu" id="langMenu" role="menu"></div>
+        </div>
+
+        <button class="pill-btn theme-btn" id="themeBtn">
+          <span id="themeIconMoon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <span id="themeIconSun" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <svg class="mosaic-strip" viewBox="0 0 400 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="400" height="10" fill="var(--bg)"/>
+    <rect x="4" y="1" width="9" height="8" fill="var(--accent)" transform="rotate(4 8 5)"/>
+    <rect x="20" y="0" width="7" height="9" fill="var(--text)" transform="rotate(-6 23 4)"/>
+    <rect x="34" y="2" width="10" height="7" fill="var(--accent-2)" transform="rotate(3 39 5)"/>
+    <rect x="52" y="0" width="8" height="9" fill="var(--border)" transform="rotate(-3 56 4)"/>
+    <rect x="68" y="1" width="9" height="8" fill="var(--accent)" transform="rotate(8 72 5)"/>
+    <rect x="86" y="0" width="7" height="9" fill="var(--text)" transform="rotate(-5 89 4)"/>
+    <rect x="100" y="2" width="10" height="7" fill="var(--border)" transform="rotate(4 105 5)"/>
+    <rect x="118" y="0" width="8" height="9" fill="var(--accent)" transform="rotate(-8 122 4)"/>
+    <rect x="134" y="1" width="9" height="8" fill="var(--text)" transform="rotate(5 138 5)"/>
+    <rect x="150" y="0" width="7" height="9" fill="var(--accent-2)" transform="rotate(-4 153 4)"/>
+    <rect x="164" y="2" width="10" height="7" fill="var(--accent)" transform="rotate(6 169 5)"/>
+    <rect x="182" y="0" width="8" height="9" fill="var(--border)" transform="rotate(-3 186 4)"/>
+    <rect x="198" y="1" width="9" height="8" fill="var(--text)" transform="rotate(4 202 5)"/>
+    <rect x="214" y="0" width="7" height="9" fill="var(--accent)" transform="rotate(-7 217 4)"/>
+    <rect x="228" y="2" width="10" height="7" fill="var(--border)" transform="rotate(3 233 5)"/>
+    <rect x="246" y="0" width="8" height="9" fill="var(--text)" transform="rotate(-5 250 4)"/>
+    <rect x="262" y="1" width="9" height="8" fill="var(--accent)" transform="rotate(6 266 5)"/>
+    <rect x="278" y="0" width="7" height="9" fill="var(--accent-2)" transform="rotate(-3 281 4)"/>
+    <rect x="292" y="2" width="10" height="7" fill="var(--text)" transform="rotate(5 297 5)"/>
+    <rect x="310" y="0" width="8" height="9" fill="var(--accent)" transform="rotate(-6 314 4)"/>
+    <rect x="326" y="1" width="9" height="8" fill="var(--border)" transform="rotate(4 330 5)"/>
+    <rect x="342" y="0" width="7" height="9" fill="var(--text)" transform="rotate(-4 345 4)"/>
+    <rect x="356" y="2" width="10" height="7" fill="var(--accent)" transform="rotate(7 361 5)"/>
+    <rect x="374" y="0" width="8" height="9" fill="var(--border)" transform="rotate(-3 378 4)"/>
+    <rect x="390" y="1" width="9" height="8" fill="var(--text)" transform="rotate(5 394 5)"/>
+  </svg>
+
+  <!-- ================= PILLAR BADGES ================= -->
+  <div class="badge-row" id="badgeRow"></div>
+
+  <!-- ================= FILTER CHIPS ================= -->
+  <nav class="chip-row" id="chipRow" aria-label="Filter products by category"></nav>
+
+  <!-- ================= PRODUCT GRID ================= -->
+  <main>
+    <div class="grid" id="grid"></div>
+
+    <div class="ask-us">
+      <span id="askUsTextText">Don't see it here? New stock lands every week —</span>
+      <a href="#" id="askUsLink">ask and we'll check</a>.
+    </div>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <p class="footer-neighborhoods" id="footerNeighborhoodsText">Find us in Gràcia, Raval, Born and Poble Sec.</p>
+    <p class="footer-legal" id="footerLegalText"></p>
+  </footer>
+
+<script>
+  /* =====================================================
+     LANGUAGES
+  ===================================================== */
+  const LANGS = ["en","es","ca","fr","de","it","pt"];
+  const LANG_NAMES = {en:"English", es:"Español", ca:"Català", fr:"Français", de:"Deutsch", it:"Italiano", pt:"Português"};
+
+  const UI = {
+    en:{
+      tagline:"Barcelona's local vape and CBD shop — no tourist markup, no dusty stock.",
+      gateQuestion:"Are you 18 or older?",
+      gateSub:"This site lists vaping, CBD and smoking accessories for adults.",
+      gateYes:"Yes, I'm 18+", gateNo:"No",
+      gateBlockedTitle:"Sorry about that.",
+      gateBlockedText:"This shop is for adults 18 and over — come back when you are.",
+      categories:{all:"All", vape:"Vapes", eliquid:"E-liquids", cbd:"CBD", accessory:"Accessories", souvenir:"Souvenirs"},
+      askUsText:"Don't see it here? New stock lands every week —",
+      askUsLink:"ask and we'll check",
+      footerNeighborhoods:"Find us in Gràcia, Raval, Born and Poble Sec.",
+      footerLegal:"You must be 18 or older to buy vaping, CBD or smoking-accessory products — we check ID on every age-restricted sale, no exceptions. CBD products are for general use only; nothing on this site is medical advice, and none of it treats, cures or prevents anything. Every price and stock level is confirmed with our team before you buy anything.",
+      whatsappProductTemplate:"Hi! I'm interested in the {product} from CannaBarna — could you tell me the price and availability?",
+      whatsappGeneral:"Hi! I'm looking for a product I didn't see listed on your site — do you have it in stock?",
+      badges:["Local first, always.","Curated, not cluttered.","No tourist tax.","Take Barcelona home with you."],
+      newBadge:"New",
+      themeToDark:"Dark", themeToLight:"Light",
+      metaTitle:"CannaBarna — Barcelona's local vape & CBD shop",
+      metaDescription:"Curated vapes, e-liquids, CBD and smoke-shop essentials. No tourist markup. Tap any product to check price and availability."
+    },
+    es:{
+      tagline:"La tienda local de vapeo y CBD de Barcelona — sin recargo turístico, sin stock anticuado.",
+      gateQuestion:"¿Eres mayor de 18 años?",
+      gateSub:"Este sitio muestra productos de vapeo, CBD y accesorios de fumador para adultos.",
+      gateYes:"Sí, tengo 18+", gateNo:"No",
+      gateBlockedTitle:"Lo sentimos.",
+      gateBlockedText:"Esta tienda es solo para mayores de 18 años — vuelve cuando lo seas.",
+      categories:{all:"Todo", vape:"Vapeadores", eliquid:"Líquidos", cbd:"CBD", accessory:"Accesorios", souvenir:"Recuerdos"},
+      askUsText:"¿No lo ves aquí? Llega stock nuevo cada semana —",
+      askUsLink:"pregúntanos y lo comprobamos",
+      footerNeighborhoods:"Encuéntranos en Gràcia, Raval, Born y Poble Sec.",
+      footerLegal:"Debes ser mayor de 18 años para comprar productos de vapeo, CBD o accesorios de fumador — pedimos DNI en cada venta con restricción de edad, sin excepciones. Los productos de CBD son de uso general; nada en este sitio es consejo médico, y ninguno trata, cura ni previene enfermedades. Cada precio y disponibilidad se confirma con nuestro equipo antes de comprar.",
+      whatsappProductTemplate:"¡Hola! Me interesa {product} de CannaBarna — ¿podéis decirme el precio y la disponibilidad?",
+      whatsappGeneral:"¡Hola! Busco un producto que no veo listado en la web — ¿lo tenéis en stock?",
+      badges:["Local, siempre.","Curado, no abarrotado.","Sin recargo turístico.","Llévate Barcelona contigo."],
+      newBadge:"Nuevo",
+      themeToDark:"Oscuro", themeToLight:"Claro",
+      metaTitle:"CannaBarna — la tienda local de vapeo y CBD de Barcelona",
+      metaDescription:"Vapeadores, líquidos, CBD y accesorios seleccionados. Sin recargo turístico. Toca un producto para consultar precio y disponibilidad."
+    },
+    ca:{
+      tagline:"La botiga local de vapeig i CBD de Barcelona — sense recàrrec turístic, sense estoc antiquat.",
+      gateQuestion:"Ets major de 18 anys?",
+      gateSub:"Aquest lloc mostra productes de vapeig, CBD i accessoris de fumador per a adults.",
+      gateYes:"Sí, tinc 18+", gateNo:"No",
+      gateBlockedTitle:"Ho sentim.",
+      gateBlockedText:"Aquesta botiga és només per a majors de 18 anys — torna quan ho siguis.",
+      categories:{all:"Tot", vape:"Vapejadors", eliquid:"Líquids", cbd:"CBD", accessory:"Accessoris", souvenir:"Records"},
+      askUsText:"No ho veus aquí? Arriba estoc nou cada setmana —",
+      askUsLink:"pregunta'ns i ho comprovem",
+      footerNeighborhoods:"Troba'ns a Gràcia, Raval, Born i Poble Sec.",
+      footerLegal:"Cal ser major de 18 anys per comprar productes de vapeig, CBD o accessoris de fumador — demanem DNI a cada venda amb restricció d'edat, sense excepcions. Els productes de CBD són d'ús general; res en aquest lloc és consell mèdic, i cap producte tracta, cura ni prevé malalties. Cada preu i disponibilitat es confirma amb el nostre equip abans de comprar.",
+      whatsappProductTemplate:"Hola! Estic interessat en {product} de CannaBarna — em podeu dir el preu i la disponibilitat?",
+      whatsappGeneral:"Hola! Busco un producte que no veig llistat al lloc web — el teniu en estoc?",
+      badges:["Local, sempre.","Curat, no abarrotat.","Sense recàrrec turístic.","Emporta't Barcelona amb tu."],
+      newBadge:"Nou",
+      themeToDark:"Fosc", themeToLight:"Clar",
+      metaTitle:"CannaBarna — la botiga local de vapeig i CBD de Barcelona",
+      metaDescription:"Vapejadors, líquids, CBD i accessoris seleccionats. Sense recàrrec turístic. Toca un producte per consultar preu i disponibilitat."
+    },
+    fr:{
+      tagline:"La boutique locale de vape et CBD de Barcelone — sans majoration touriste, sans stock poussiéreux.",
+      gateQuestion:"Avez-vous 18 ans ou plus ?",
+      gateSub:"Ce site présente des produits de vape, de CBD et des accessoires fumeurs pour adultes.",
+      gateYes:"Oui, j'ai 18 ans ou plus", gateNo:"Non",
+      gateBlockedTitle:"Désolé.",
+      gateBlockedText:"Cette boutique est réservée aux 18 ans et plus — revenez quand ce sera le cas.",
+      categories:{all:"Tout", vape:"Vapes", eliquid:"E-liquides", cbd:"CBD", accessory:"Accessoires", souvenir:"Souvenirs"},
+      askUsText:"Vous ne le voyez pas ici ? De nouveaux stocks arrivent chaque semaine —",
+      askUsLink:"demandez-nous, on vérifie",
+      footerNeighborhoods:"Retrouvez-nous à Gràcia, Raval, Born et Poble Sec.",
+      footerLegal:"Il faut avoir 18 ans ou plus pour acheter des produits de vape, de CBD ou des accessoires fumeurs — nous vérifions l'identité pour chaque vente soumise à condition d'âge, sans exception. Les produits au CBD sont destinés à un usage général ; rien sur ce site ne constitue un avis médical, et aucun produit ne traite, ne guérit ni ne prévient de maladie. Chaque prix et disponibilité est confirmé par notre équipe avant l'achat.",
+      whatsappProductTemplate:"Bonjour ! Je suis intéressé par {product} de CannaBarna — pouvez-vous me dire le prix et la disponibilité ?",
+      whatsappGeneral:"Bonjour ! Je cherche un produit qui n'est pas listé sur votre site — l'avez-vous en stock ?",
+      badges:["Local avant tout.","Sélectionné, pas entassé.","Sans majoration touriste.","Emportez un peu de Barcelone."],
+      newBadge:"Nouveau",
+      themeToDark:"Sombre", themeToLight:"Clair",
+      metaTitle:"CannaBarna — la boutique locale de vape et CBD de Barcelone",
+      metaDescription:"Vapes, e-liquides, CBD et accessoires sélectionnés. Sans majoration touriste. Touchez un produit pour connaître le prix et la disponibilité."
+    },
+    de:{
+      tagline:"Barcelonas lokaler Vape- und CBD-Shop — kein Touristenaufschlag, kein verstaubtes Sortiment.",
+      gateQuestion:"Bist du 18 Jahre oder älter?",
+      gateSub:"Diese Seite zeigt Vape-, CBD- und Raucherzubehör-Produkte für Erwachsene.",
+      gateYes:"Ja, ich bin 18+", gateNo:"Nein",
+      gateBlockedTitle:"Das tut uns leid.",
+      gateBlockedText:"Dieser Shop ist nur für Personen ab 18 Jahren — komm wieder, wenn du so alt bist.",
+      categories:{all:"Alle", vape:"Vapes", eliquid:"E-Liquids", cbd:"CBD", accessory:"Zubehör", souvenir:"Souvenirs"},
+      askUsText:"Nicht gefunden? Jede Woche kommt neue Ware rein —",
+      askUsLink:"frag uns, wir schauen nach",
+      footerNeighborhoods:"Ihr findet uns in Gràcia, Raval, Born und Poble Sec.",
+      footerLegal:"Du musst 18 Jahre oder älter sein, um Vape-, CBD- oder Raucherzubehör-Produkte zu kaufen — wir prüfen bei jedem altersbeschränkten Verkauf den Ausweis, ohne Ausnahme. CBD-Produkte sind nur für den allgemeinen Gebrauch bestimmt; nichts auf dieser Seite ist medizinischer Rat, und nichts davon behandelt, heilt oder verhindert Krankheiten. Preis und Verfügbarkeit werden vor dem Kauf immer mit unserem Team bestätigt.",
+      whatsappProductTemplate:"Hallo! Ich interessiere mich für {product} von CannaBarna — könnt ihr mir Preis und Verfügbarkeit nennen?",
+      whatsappGeneral:"Hallo! Ich suche ein Produkt, das ich auf eurer Seite nicht gefunden habe — habt ihr das vorrätig?",
+      badges:["Immer lokal.","Kuratiert, nicht vollgestopft.","Kein Touristenaufschlag.","Nimm ein Stück Barcelona mit."],
+      newBadge:"Neu",
+      themeToDark:"Dunkel", themeToLight:"Hell",
+      metaTitle:"CannaBarna — Barcelonas lokaler Vape- und CBD-Shop",
+      metaDescription:"Ausgewählte Vapes, E-Liquids, CBD und Zubehör. Kein Touristenaufschlag. Auf ein Produkt tippen für Preis und Verfügbarkeit."
+    },
+    it:{
+      tagline:"Il negozio locale di svapo e CBD di Barcellona — niente sovrapprezzo turistico, niente scorte polverose.",
+      gateQuestion:"Hai 18 anni o più?",
+      gateSub:"Questo sito mostra prodotti di svapo, CBD e accessori da fumo per adulti.",
+      gateYes:"Sì, ho 18+", gateNo:"No",
+      gateBlockedTitle:"Ci dispiace.",
+      gateBlockedText:"Questo negozio è riservato ai maggiori di 18 anni — torna quando lo sarai.",
+      categories:{all:"Tutti", vape:"Svapo", eliquid:"E-liquid", cbd:"CBD", accessory:"Accessori", souvenir:"Souvenir"},
+      askUsText:"Non lo vedi qui? Arrivano nuove scorte ogni settimana —",
+      askUsLink:"chiedici, controlliamo",
+      footerNeighborhoods:"Ci trovi a Gràcia, Raval, Born e Poble Sec.",
+      footerLegal:"Devi avere almeno 18 anni per acquistare prodotti di svapo, CBD o accessori da fumo — verifichiamo un documento per ogni vendita con limite di età, senza eccezioni. I prodotti al CBD sono per uso generale; nulla su questo sito è consiglio medico, e nessun prodotto cura, tratta o previene malattie. Ogni prezzo e disponibilità viene confermato dal nostro team prima dell'acquisto.",
+      whatsappProductTemplate:"Ciao! Sono interessato a {product} di CannaBarna — potete dirmi prezzo e disponibilità?",
+      whatsappGeneral:"Ciao! Cerco un prodotto che non ho trovato sul sito — lo avete disponibile?",
+      badges:["Sempre locale.","Curato, non affollato.","Niente sovrapprezzo turistico.","Porta Barcellona a casa con te."],
+      newBadge:"Nuovo",
+      themeToDark:"Scuro", themeToLight:"Chiaro",
+      metaTitle:"CannaBarna — il negozio locale di svapo e CBD di Barcellona",
+      metaDescription:"Svapo, e-liquid, CBD e accessori selezionati. Niente sovrapprezzo turistico. Tocca un prodotto per prezzo e disponibilità."
+    },
+    pt:{
+      tagline:"A loja local de vape e CBD de Barcelona — sem sobretaxa turística, sem stock antiquado.",
+      gateQuestion:"Tens 18 anos ou mais?",
+      gateSub:"Este site mostra produtos de vape, CBD e acessórios para fumadores, para adultos.",
+      gateYes:"Sim, tenho 18+", gateNo:"Não",
+      gateBlockedTitle:"Desculpa.",
+      gateBlockedText:"Esta loja é só para maiores de 18 anos — volta quando o fores.",
+      categories:{all:"Tudo", vape:"Vapes", eliquid:"E-líquidos", cbd:"CBD", accessory:"Acessórios", souvenir:"Lembranças"},
+      askUsText:"Não vês aqui? Chega stock novo todas as semanas —",
+      askUsLink:"pergunta-nos e vamos verificar",
+      footerNeighborhoods:"Encontra-nos em Gràcia, Raval, Born e Poble Sec.",
+      footerLegal:"É preciso ter 18 anos ou mais para comprar produtos de vape, CBD ou acessórios para fumadores — pedimos identificação em todas as vendas com restrição de idade, sem exceções. Os produtos de CBD são para uso geral; nada neste site é conselho médico, e nenhum produto trata, cura ou previne doenças. Cada preço e disponibilidade é confirmado com a nossa equipa antes da compra.",
+      whatsappProductTemplate:"Olá! Tenho interesse em {product} da CannaBarna — podem dizer-me o preço e a disponibilidade?",
+      whatsappGeneral:"Olá! Procuro um produto que não vi listado no site — têm em stock?",
+      badges:["Local, sempre.","Selecionado, não amontoado.","Sem sobretaxa turística.","Leva Barcelona contigo."],
+      newBadge:"Novo",
+      themeToDark:"Escuro", themeToLight:"Claro",
+      metaTitle:"CannaBarna — a loja local de vape e CBD de Barcelona",
+      metaDescription:"Vapes, e-líquidos, CBD e acessórios selecionados. Sem sobretaxa turística. Toca num produto para veres preço e disponibilidade."
+    }
+  };
+
+  /* =====================================================
+     PRODUCT CATALOG
+     To add a product: copy one block below and edit it.
+     - img: photo number. Photos live next to this file,
+       named 1.jpg, 2.jpg, 3.jpg ... matching this list's
+       order. Until a numbered photo exists, it falls back
+       to 1.jpg automatically.
+     - category must be one of: vape, eliquid, cbd, accessory, souvenir
+  ===================================================== */
+  /* DRAFT BRAND NAMES: pulled from current Barcelona/Spain market research,
+     not from CannaBarna's confirmed stock. Swap in your real brands/models
+     whenever — just edit the "name" strings below, nothing else depends on them. */
+  const PRODUCTS = [
+    {img:1,category:"vape",
+     name:{en:"Lost Mary Disposable",es:"Desechable Lost Mary",ca:"Lost Mary d'un sol ús",fr:"Lost Mary jetable",de:"Lost Mary Einweg-Vape",it:"Lost Mary usa e getta",pt:"Lost Mary descartável"},
+     blurb:{en:"The top-selling disposable right now.",es:"El desechable más vendido ahora mismo.",ca:"El d'un sol ús més venut ara mateix.",fr:"La jetable la plus vendue en ce moment.",de:"Das meistverkaufte Einweg-Modell gerade.",it:"Il monouso più venduto del momento.",pt:"O descartável mais vendido agora."}},
+    {img:2,category:"vape",
+     name:{en:"Elf Bar Disposable",es:"Desechable Elf Bar",ca:"Elf Bar d'un sol ús",fr:"Elf Bar jetable",de:"Elf Bar Einweg-Vape",it:"Elf Bar usa e getta",pt:"Elf Bar descartável"},
+     blurb:{en:"A familiar name, always in stock.",es:"Un nombre conocido, siempre disponible.",ca:"Un nom conegut, sempre disponible.",fr:"Un nom connu, toujours en stock.",de:"Ein bekannter Name, immer vorrätig.",it:"Un nome noto, sempre disponibile.",pt:"Um nome conhecido, sempre disponível."}},
+    {img:3,category:"vape",
+     name:{en:"SKE Crystal Disposable",es:"Desechable SKE Crystal",ca:"SKE Crystal d'un sol ús",fr:"SKE Crystal jetable",de:"SKE Crystal Einweg-Vape",it:"SKE Crystal usa e getta",pt:"SKE Crystal descartável"},
+     blurb:{en:"Clean flavor, no fuss.",es:"Sabor limpio, sin complicaciones.",ca:"Sabor net, sense complicacions.",fr:"Saveur nette, sans complications.",de:"Klarer Geschmack, unkompliziert.",it:"Gusto pulito, senza complicazioni.",pt:"Sabor limpo, sem complicações."}},
+    {img:4,category:"vape",
+     name:{en:"Vaporesso XROS Pod Kit",es:"Kit de pod Vaporesso XROS",ca:"Kit de pod Vaporesso XROS",fr:"Kit pod Vaporesso XROS",de:"Vaporesso XROS Pod-Kit",it:"Kit pod Vaporesso XROS",pt:"Kit de pod Vaporesso XROS"},
+     blurb:{en:"The refillable pod most people end up with.",es:"El pod recargable con el que casi todos acaban.",ca:"El pod recarregable amb què gairebé tothom acaba.",fr:"Le pod rechargeable que tout le monde finit par adopter.",de:"Das Pod-System, bei dem die meisten landen.",it:"Il pod ricaricabile con cui finiscono quasi tutti.",pt:"O pod recarregável que a maioria acaba por escolher."}},
+    {img:5,category:"vape",
+     name:{en:"Uwell Caliburn Pod Kit",es:"Kit de pod Uwell Caliburn",ca:"Kit de pod Uwell Caliburn",fr:"Kit pod Uwell Caliburn",de:"Uwell Caliburn Pod-Kit",it:"Kit pod Uwell Caliburn",pt:"Kit de pod Uwell Caliburn"},
+     blurb:{en:"Compact, and known for getting the flavor right.",es:"Compacto, conocido por acertar con el sabor.",ca:"Compacte, conegut per encertar el sabor.",fr:"Compact, réputé pour son rendu de saveur.",de:"Kompakt, bekannt für seinen guten Geschmack.",it:"Compatto, noto per il gusto ben riuscito.",pt:"Compacto, conhecido por acertar no sabor."}},
+    {img:6,category:"vape",
+     name:{en:"Replacement Pods",es:"Pods de repuesto",ca:"Pods de recanvi",fr:"Pods de rechange",de:"Ersatz-Pods",it:"Pod di ricambio",pt:"Pods de substituição"},
+     blurb:{en:"Pre-filled or refillable, matched to your device.",es:"Prellenados o rellenables, según tu dispositivo.",ca:"Preomplerts o recarregables, segons el teu dispositiu.",fr:"Préremplis ou rechargeables, selon votre appareil.",de:"Vorbefüllt oder nachfüllbar, passend zu deinem Gerät.",it:"Preriempiti o ricaricabili, in base al tuo dispositivo.",pt:"Pré-cheios ou recarregáveis, conforme o teu dispositivo."}},
+    {img:7,category:"vape",
+     name:{en:"VooPoo Box Mod",es:"Mod tipo box VooPoo",ca:"Mod tipus box VooPoo",fr:"Box mod VooPoo",de:"VooPoo Box-Mod",it:"Box mod VooPoo",pt:"Box mod VooPoo"},
+     blurb:{en:"Adjustable power for people who like control.",es:"Potencia ajustable para quien quiere control.",ca:"Potència ajustable per a qui vol control.",fr:"Puissance réglable pour qui aime tout contrôler.",de:"Regelbare Leistung für alle, die es genau wollen.",it:"Potenza regolabile per chi ama il controllo.",pt:"Potência ajustável para quem gosta de controlo."}},
+    {img:8,category:"vape",
+     name:{en:"GeekVape Sub-Ohm Tank",es:"Atomizador sub-ohm GeekVape",ca:"Atomitzador sub-ohm GeekVape",fr:"Clearomiseur sub-ohm GeekVape",de:"GeekVape Sub-Ohm-Tank",it:"Atomizzatore sub-ohm GeekVape",pt:"Atomizador sub-ohm GeekVape"},
+     blurb:{en:"Bigger clouds, easy refills, solid build.",es:"Más nube, recarga fácil, construcción sólida.",ca:"Més fum, recàrrega fàcil, construcció sòlida.",fr:"Plus de vapeur, recharge facile, solide.",de:"Mehr Dampf, einfaches Nachfüllen, robust gebaut.",it:"Più vapore, ricarica facile, struttura solida.",pt:"Mais vapor, recarga fácil, construção sólida."}},
+    {img:9,category:"vape",
+     name:{en:"Replacement Coils",es:"Resistencias de repuesto",ca:"Resistències de recanvi",fr:"Résistances de rechange",de:"Ersatz-Coils",it:"Resistenze di ricambio",pt:"Resistências de substituição"},
+     blurb:{en:"Fits most major brands, ask which one you need.",es:"Compatible con la mayoría de marcas, pregúntanos cuál necesitas.",ca:"Compatible amb la majoria de marques, pregunta'ns quina necessites.",fr:"Compatible avec la plupart des marques, demandez-nous laquelle il vous faut.",de:"Passt zu den meisten gängigen Marken, frag uns, welche du brauchst.",it:"Compatibili con la maggior parte delle marche, chiedici quale ti serve.",pt:"Compatível com a maioria das marcas, pergunta-nos qual precisas."}},
+    {img:10,category:"vape",
+     name:{en:"Battery & Charger",es:"Batería y cargador",ca:"Bateria i carregador",fr:"Batterie et chargeur",de:"Akku & Ladegerät",it:"Batteria e caricatore",pt:"Bateria e carregador"},
+     blurb:{en:"Reliable power, the boring part done right.",es:"Energía fiable, lo aburrido bien hecho.",ca:"Energia fiable, la part avorrida ben feta.",fr:"Une alimentation fiable, la base bien faite.",de:"Zuverlässige Power, solide gemacht.",it:"Energia affidabile, fatta bene.",pt:"Energia fiável, bem feita."}},
+    {img:11,category:"eliquid",
+     name:{en:"Bombo E-Liquid",es:"E-líquido Bombo",ca:"E-líquid Bombo",fr:"E-liquide Bombo",de:"Bombo E-Liquid",it:"Liquido Bombo",pt:"Líquido Bombo"},
+     blurb:{en:"The big Spanish brand, hundreds of flavors.",es:"La gran marca española, cientos de sabores.",ca:"La gran marca espanyola, centenars de sabors.",fr:"La grande marque espagnole, des centaines de saveurs.",de:"Die große spanische Marke, hunderte Aromen.",it:"Il grande marchio spagnolo, centinaia di gusti.",pt:"A grande marca espanhola, centenas de sabores."}},
+    {img:12,category:"eliquid",
+     name:{en:"Just Juice E-Liquid",es:"E-líquido Just Juice",ca:"E-líquid Just Juice",fr:"E-liquide Just Juice",de:"Just Juice E-Liquid",it:"Liquido Just Juice",pt:"Líquido Just Juice"},
+     blurb:{en:"Fruit-forward classics, no surprises.",es:"Clásicos afrutados, sin sorpresas.",ca:"Clàssics afruitats, sense sorpreses.",fr:"Des classiques fruités, sans surprise.",de:"Fruchtige Klassiker, keine Überraschungen.",it:"Classici fruttati, senza sorprese.",pt:"Clássicos frutados, sem surpresas."}},
+    {img:13,category:"eliquid",
+     name:{en:"IVG Nic Salt E-Liquid",es:"Sales de nicotina IVG",ca:"Sals de nicotina IVG",fr:"Sels de nicotine IVG",de:"IVG Nikotinsalz-Liquid",it:"Sali di nicotina IVG",pt:"Sais de nicotina IVG"},
+     blurb:{en:"Smoother hit, faster satisfaction.",es:"Calada más suave, satisfacción más rápida.",ca:"Calada més suau, satisfacció més ràpida.",fr:"Inhalation plus douce, satisfaction plus rapide.",de:"Sanfterer Zug, schnellere Wirkung.",it:"Tiro più morbido, soddisfazione più rapida.",pt:"Tragada mais suave, satisfação mais rápida."}},
+    {img:14,category:"eliquid",
+     name:{en:"Oil4Vap Longfill Aroma",es:"Aroma longfill Oil4Vap",ca:"Aroma longfill Oil4Vap",fr:"Arôme longfill Oil4Vap",de:"Oil4Vap Longfill-Aroma",it:"Aroma longfill Oil4Vap",pt:"Aroma longfill Oil4Vap"},
+     blurb:{en:"Concentrated flavor, mix it to taste.",es:"Sabor concentrado, mézclalo a tu gusto.",ca:"Sabor concentrat, barreja'l al teu gust.",fr:"Arôme concentré, à doser selon vos goûts.",de:"Konzentriertes Aroma, nach Geschmack mischen.",it:"Aroma concentrato, da miscelare a piacere.",pt:"Sabor concentrado, mistura ao teu gosto."}},
+    {img:15,category:"eliquid",
+     name:{en:"Nicotine Shot",es:"Booster de nicotina",ca:"Booster de nicotina",fr:"Booster de nicotine",de:"Nikotin-Booster",it:"Booster di nicotina",pt:"Booster de nicotina"},
+     blurb:{en:"Add strength to any shortfill or longfill.",es:"Añade fuerza a cualquier shortfill o longfill.",ca:"Afegeix força a qualsevol shortfill o longfill.",fr:"Ajoute du peps à n'importe quel shortfill ou longfill.",de:"Verstärkt jedes Shortfill oder Longfill.",it:"Aggiunge forza a qualsiasi shortfill o longfill.",pt:"Adiciona força a qualquer shortfill ou longfill."}},
+    {img:16,category:"eliquid",
+     name:{en:"CBD E-Liquid",es:"E-líquido con CBD",ca:"E-líquid amb CBD",fr:"E-liquide au CBD",de:"CBD-Liquid",it:"Liquido al CBD",pt:"Líquido com CBD"},
+     blurb:{en:"CBD blended in, same easy vape.",es:"Con CBD, el mismo vapeo de siempre.",ca:"Amb CBD, el mateix vapeig de sempre.",fr:"Du CBD en plus, la même vape facile.",de:"Mit CBD, genauso einfach zu dampfen.",it:"Con CBD, lo stesso svapo di sempre.",pt:"Com CBD, o mesmo vape de sempre."}},
+    {img:17,category:"cbd",
+     name:{en:"CBD Oil Drops",es:"Gotas de aceite de CBD",ca:"Gotes d'oli de CBD",fr:"Gouttes d'huile de CBD",de:"CBD-Öltropfen",it:"Gocce di olio di CBD",pt:"Gotas de óleo de CBD"},
+     blurb:{en:"Full-spectrum drops, dosed your way.",es:"Espectro completo, a tu propio ritmo.",ca:"Espectre complet, al teu ritme.",fr:"Spectre complet, à doser comme vous voulez.",de:"Vollspektrum-Tropfen, nach eigenem Maß dosiert.",it:"Spettro completo, dosato come vuoi.",pt:"Espetro completo, doseado à tua maneira."}},
+    {img:18,category:"cbd",
+     name:{en:"CBD Gummies",es:"Gominolas de CBD",ca:"Gominoles de CBD",fr:"Bonbons au CBD",de:"CBD-Fruchtgummis",it:"Caramelle gommose al CBD",pt:"Gomas de CBD"},
+     blurb:{en:"Easy, discreet, made to share or not.",es:"Fáciles, discretas, para compartir o no.",ca:"Fàcils, discretes, per compartir o no.",fr:"Faciles, discrets, à partager ou non.",de:"Einfach, unauffällig, zum Teilen oder nicht.",it:"Facili, discrete, da condividere o no.",pt:"Fáceis, discretas, para partilhar ou não."}},
+    {img:19,category:"cbd",
+     name:{en:"CBD Vape Cartridge",es:"Cartucho de CBD",ca:"Càrtutx de CBD",fr:"Cartouche CBD",de:"CBD-Vape-Cartridge",it:"Cartuccia CBD",pt:"Cartucho de CBD"},
+     blurb:{en:"Drop-in cartridge, no mess, no guesswork.",es:"Se coloca y ya está, sin líos.",ca:"Es col·loca i ja està, sense embolics.",fr:"Il suffit de la clipser, aucun tracas.",de:"Einfach einsetzen, ganz ohne Aufwand.",it:"Si inserisce e basta, senza pensieri.",pt:"Basta encaixar, sem complicações."}},
+    {img:20,category:"cbd",
+     name:{en:"CBD Balm",es:"Bálsamo de CBD",ca:"Bàlsam de CBD",fr:"Baume au CBD",de:"CBD-Balsam",it:"Balsamo al CBD",pt:"Bálsamo de CBD"},
+     blurb:{en:"For topical, everyday use.",es:"Para uso tópico, del día a día.",ca:"Per a ús tòpic, del dia a dia.",fr:"Pour un usage topique, au quotidien.",de:"Für die äußerliche Anwendung, im Alltag.",it:"Per uso topico, di tutti i giorni.",pt:"Para uso tópico, do dia a dia."}},
+    {img:21,category:"cbd",
+     name:{en:"CBD Capsules",es:"Cápsulas de CBD",ca:"Càpsules de CBD",fr:"Gélules de CBD",de:"CBD-Kapseln",it:"Capsule di CBD",pt:"Cápsulas de CBD"},
+     blurb:{en:"Pre-measured, no dropper needed.",es:"Dosis premedida, sin cuentagotas.",ca:"Dosi premesurada, sense comptagotes.",fr:"Dosage préétabli, sans compte-gouttes.",de:"Vordosiert, keine Pipette nötig.",it:"Dose già misurata, senza contagocce.",pt:"Dose pré-medida, sem conta-gotas."}},
+    {img:22,category:"cbd",
+     name:{en:"CBD Flower",es:"Flor de CBD",ca:"Flor de CBD",fr:"Fleur de CBD",de:"CBD-Blüte",it:"Fiore di CBD",pt:"Flor de CBD"},
+     blurb:{en:"Legal hemp flower, lab-checked THC levels.",es:"Flor de cáñamo legal, niveles de THC verificados.",ca:"Flor de cànem legal, nivells de THC verificats.",fr:"Fleur de chanvre légale, taux de THC contrôlés.",de:"Legale Hanfblüte, geprüfter THC-Gehalt.",it:"Fiore di canapa legale, livelli di THC verificati.",pt:"Flor de cânhamo legal, níveis de THC verificados."}},
+    {img:23,category:"accessory",
+     name:{en:"Herb Grinder",es:"Grinder",ca:"Grinder",fr:"Grinder",de:"Grinder",it:"Grinder",pt:"Grinder"},
+     blurb:{en:"Metal, sharp teeth, built to last.",es:"Metal, dientes afilados, hecho para durar.",ca:"Metall, dents afilades, fet per durar.",fr:"Métal, dents affûtées, conçu pour durer.",de:"Metall, scharfe Zähne, für lange Nutzung gemacht.",it:"Metallo, denti affilati, fatto per durare.",pt:"Metal, dentes afiados, feito para durar."}},
+    {img:24,category:"accessory",
+     name:{en:"Rolling Papers",es:"Papel de fumar",ca:"Paper de fumar",fr:"Feuilles à rouler",de:"Zigarettenpapier",it:"Cartine",pt:"Mortalhas"},
+     blurb:{en:"Thin, clean burn, no weird aftertaste.",es:"Fino, quema limpia, sin sabores raros.",ca:"Prim, cremada neta, sense gustos rars.",fr:"Fines, combustion propre, aucun arrière-goût.",de:"Dünn, sauberer Abbrand, kein komischer Nachgeschmack.",it:"Sottili, combustione pulita, nessun retrogusto strano.",pt:"Finas, combustão limpa, sem sabor estranho."}},
+    {img:25,category:"accessory",
+     name:{en:"Rolling Tray",es:"Bandeja de liar",ca:"Safata per liar",fr:"Plateau à rouler",de:"Rolling Tray",it:"Vassoio per rollare",pt:"Tabuleiro para enrolar"},
+     blurb:{en:"Keeps everything in one place.",es:"Todo en un solo sitio.",ca:"Tot en un sol lloc.",fr:"Tout au même endroit.",de:"Alles an einem Ort.",it:"Tutto in un unico posto.",pt:"Tudo num só lugar."}},
+    {img:26,category:"accessory",
+     name:{en:"Filter Tips",es:"Filtros de cartón",ca:"Filtres de cartró",fr:"Filtres en carton",de:"Filtertips",it:"Filtri pretagliati",pt:"Filtros pré-cortados"},
+     blurb:{en:"Pre-cut card tips, no scissors needed.",es:"Precortados, sin necesidad de tijeras.",ca:"Pretallats, sense necessitat de tisores.",fr:"Prédécoupés, plus besoin de ciseaux.",de:"Vorgeschnitten, keine Schere nötig.",it:"Già tagliati, niente forbici.",pt:"Já cortados, sem precisar de tesoura."}},
+    {img:27,category:"accessory",
+     name:{en:"Glass Pipe",es:"Pipa de cristal",ca:"Pipa de vidre",fr:"Pipe en verre",de:"Glaspfeife",it:"Pipa di vetro",pt:"Cachimbo de vidro"},
+     blurb:{en:"Simple, sturdy, easy to clean.",es:"Sencilla, resistente, fácil de limpiar.",ca:"Senzilla, resistent, fàcil de netejar.",fr:"Simple, solide, facile à nettoyer.",de:"Einfach, robust, leicht zu reinigen.",it:"Semplice, robusta, facile da pulire.",pt:"Simples, resistente, fácil de limpar."}},
+    {img:28,category:"accessory",
+     name:{en:"Water Pipe",es:"Cachimba",ca:"Cachimba",fr:"Bang",de:"Wasserpfeife",it:"Bong",pt:"Cachimbo de água"},
+     blurb:{en:"Smooth pull, cooler hit.",es:"Calada suave, más fresca.",ca:"Calada suau, més fresca.",fr:"Bouffée plus douce et plus fraîche.",de:"Weicherer, kühlerer Zug.",it:"Tiro più morbido e fresco.",pt:"Tragada mais suave e fresca."}},
+    {img:29,category:"accessory",
+     name:{en:"Storage Jar",es:"Bote hermético",ca:"Pot hermètic",fr:"Bocal hermétique",de:"Vorratsdose",it:"Barattolo ermetico",pt:"Frasco hermético"},
+     blurb:{en:"Airtight glass, keeps things fresh.",es:"Cristal hermético, mantiene todo fresco.",ca:"Vidre hermètic, manté tot fresc.",fr:"En verre, garde tout au frais.",de:"Luftdichtes Glas, hält alles frisch.",it:"Vetro ermetico, mantiene tutto fresco.",pt:"Vidro hermético, mantém tudo fresco."}},
+    {img:30,category:"accessory",
+     name:{en:"Precision Scale",es:"Báscula de precisión",ca:"Bàscula de precisió",fr:"Balance de précision",de:"Präzisionswaage",it:"Bilancino di precisione",pt:"Balança de precisão"},
+     blurb:{en:"Accurate to the decimal, every time.",es:"Precisión al decimal, siempre.",ca:"Precisió al decimal, sempre.",fr:"Précise au dixième, à chaque fois.",de:"Genau auf die Kommastelle, jedes Mal.",it:"Preciso al decimale, ogni volta.",pt:"Precisa ao decimal, sempre."}},
+    {img:31,category:"accessory",
+     name:{en:"Classic Lighter",es:"Mechero clásico",ca:"Encenedor clàssic",fr:"Briquet classique",de:"Klassisches Feuerzeug",it:"Accendino classico",pt:"Isqueiro clássico"},
+     blurb:{en:"Refillable, reliable, always in stock.",es:"Recargable, fiable, nunca falta.",ca:"Recarregable, fiable, sempre disponible.",fr:"Rechargeable, fiable, toujours en stock.",de:"Nachfüllbar, zuverlässig, immer vorrätig.",it:"Ricaricabile, affidabile, sempre disponibile.",pt:"Recarregável, fiável, sempre disponível."}},
+    {img:32,category:"accessory",
+     name:{en:"Ashtray",es:"Cenicero",ca:"Cendrer",fr:"Cendrier",de:"Aschenbecher",it:"Posacenere",pt:"Cinzeiro"},
+     blurb:{en:"Simple, heavy, does its one job well.",es:"Sencillo, resistente, cumple su función.",ca:"Senzill, resistent, compleix la seva funció.",fr:"Simple, solide, fait exactement son travail.",de:"Einfach, stabil, macht genau seinen Job.",it:"Semplice, robusto, fa bene il suo lavoro.",pt:"Simples, resistente, cumpre bem a sua função."}},
+    {img:33,category:"accessory",
+     name:{en:"Dry Herb Vaporizer",es:"Vaporizador de hierbas",ca:"Vaporitzador d'herbes",fr:"Vaporisateur d'herbes sèches",de:"Kräuter-Vaporizer",it:"Vaporizzatore per erbe",pt:"Vaporizador de ervas"},
+     blurb:{en:"For legal herbs, no combustion, less smell.",es:"Para hierbas legales, sin combustión, menos olor.",ca:"Per a herbes legals, sense combustió, menys olor.",fr:"Pour herbes légales, sans combustion, moins d'odeur.",de:"Für legale Kräuter, ohne Verbrennung, weniger Geruch.",it:"Per erbe legali, senza combustione, meno odore.",pt:"Para ervas legais, sem combustão, menos cheiro."}},
+    {img:34,category:"accessory",
+     name:{en:"Pre-Rolled Cones",es:"Conos pre-liados",ca:"Cons preenrotllats",fr:"Cônes préroulés",de:"Vorgedrehte Cones",it:"Coni pre-arrotolati",pt:"Cones pré-enrolados"},
+     blurb:{en:"Already shaped, just fill and go.",es:"Ya con forma, solo rellenar.",ca:"Ja tenen forma, només cal omplir-los.",fr:"Déjà en forme, il ne reste qu'à remplir.",de:"Schon geformt, einfach befüllen.",it:"Già pronti, basta riempirli.",pt:"Já com forma, é só encher."}},
+    {img:35,category:"accessory",
+     name:{en:"Rolling Machine",es:"Máquina de liar",ca:"Màquina de liar",fr:"Machine à rouler",de:"Stopfmaschine",it:"Macchinetta per arrotolare",pt:"Máquina de enrolar"},
+     blurb:{en:"Perfect roll, every time, no practice needed.",es:"Liado perfecto, siempre, sin práctica.",ca:"Enrotllat perfecte, sempre, sense pràctica.",fr:"Une roulée parfaite à chaque fois, sans entraînement.",de:"Perfekt gedreht, jedes Mal, ohne Übung.",it:"Canna perfetta, ogni volta, senza pratica.",pt:"Enrolado perfeito, sempre, sem prática."}},
+    {img:36,category:"accessory",
+     name:{en:"Cleaning Kit",es:"Kit de limpieza",ca:"Kit de neteja",fr:"Kit de nettoyage",de:"Reinigungsset",it:"Kit di pulizia",pt:"Kit de limpeza"},
+     blurb:{en:"Isopropyl and swabs, for glass that stays clear.",es:"Alcohol isopropílico y bastoncillos, para que el cristal quede impecable.",ca:"Alcohol isopropílic i bastonets, perquè el vidre quedi net.",fr:"Alcool isopropylique et cotons-tiges, pour un verre impeccable.",de:"Isopropylalkohol und Wattestäbchen, für klares Glas.",it:"Alcol isopropilico e cotton fioc, per un vetro sempre pulito.",pt:"Álcool isopropílico e cotonetes, para o vidro ficar impecável."}},
+    {img:37,category:"accessory",
+     name:{en:"Drip Tips",es:"Drip tips",ca:"Drip tips",fr:"Drip tips",de:"Drip Tips",it:"Drip tip",pt:"Drip tips"},
+     blurb:{en:"Swap the mouthpiece, change the feel.",es:"Cambia la boquilla, cambia la sensación.",ca:"Canvia la broquilla, canvia la sensació.",fr:"Changez l'embout, changez la sensation.",de:"Mundstück wechseln, Gefühl verändern.",it:"Cambia il boccaglio, cambia la sensazione.",pt:"Troca o bocal, muda a sensação."}},
+    {img:38,category:"souvenir",isNew:true,
+     name:{en:"Signature Lighter",es:"Mechero de la casa",ca:"Encenedor de la casa",fr:"Briquet signature",de:"Signature-Feuerzeug",it:"Accendino signature",pt:"Isqueiro exclusivo"},
+     blurb:{en:"The one souvenir people actually keep.",es:"El recuerdo que la gente sí se queda.",ca:"El record que la gent realment es queda.",fr:"Le souvenir que les gens gardent vraiment.",de:"Das Souvenir, das Leute wirklich behalten.",it:"Il souvenir che la gente tiene davvero.",pt:"A lembrança que as pessoas realmente guardam."}},
+    {img:39,category:"souvenir",isNew:true,
+     name:{en:"Signature Grinder",es:"Grinder de la casa",ca:"Grinder de la casa",fr:"Grinder signature",de:"Signature-Grinder",it:"Grinder signature",pt:"Grinder exclusivo"},
+     blurb:{en:"Barcelona in your pocket, not a fridge magnet.",es:"Barcelona en el bolsillo, no un imán de nevera.",ca:"Barcelona a la butxaca, no un imant de nevera.",fr:"Barcelone dans la poche, pas un aimant à frigo.",de:"Barcelona in der Tasche, kein Kühlschrankmagnet.",it:"Barcellona in tasca, non una calamita da frigo.",pt:"Barcelona no bolso, não um íman de frigorífico."}},
+    {img:40,category:"souvenir",isNew:true,
+     name:{en:"Enamel Patch",es:"Parche bordado",ca:"Pedaç brodat",fr:"Écusson brodé",de:"Gestickter Patch",it:"Toppa ricamata",pt:"Emblema bordado"},
+     blurb:{en:"Sew it on, pin it up, take it home.",es:"Cóselo, engánchalo, llévatelo a casa.",ca:"Cus-lo, enganxa'l, emporta-te'l a casa.",fr:"À coudre, à épingler, à ramener chez soi.",de:"Aufnähen, anstecken, mit nach Hause nehmen.",it:"Da cucire, da appuntare, da portare a casa.",pt:"Cose, aplica, leva para casa."}},
+    {img:41,category:"souvenir",isNew:true,
+     name:{en:"Sticker Pack",es:"Pack de pegatinas",ca:"Pack d'adhesius",fr:"Pack d'autocollants",de:"Sticker-Pack",it:"Set di adesivi",pt:"Pack de autocolantes"},
+     blurb:{en:"Small format, real design, no leaf clip art.",es:"Formato pequeño, diseño real, sin la típica hoja de marihuana.",ca:"Format petit, disseny real, sense la típica fulla de marihuana.",fr:"Petit format, vrai design, sans le cliché de la feuille de cannabis.",de:"Kleines Format, echtes Design, ohne das übliche Hanfblatt-Klischee.",it:"Formato piccolo, design vero, senza il solito cliché della foglia di cannabis.",pt:"Formato pequeno, design real, sem o clichê da folha de cannabis."}},
+    {img:42,category:"souvenir",isNew:true,
+     name:{en:"Trencadís Rolling Tray",es:"Bandeja trencadís",ca:"Safata trencadís",fr:"Plateau trencadís",de:"Trencadís-Rolling-Tray",it:"Vassoio trencadís",pt:"Tabuleiro trencadís"},
+     blurb:{en:"Broken-tile pattern, made for daily use.",es:"Estampado de mosaico roto, para el día a día.",ca:"Estampat de mosaic trencat, per al dia a dia.",fr:"Motif de mosaïque brisée, pour un usage quotidien.",de:"Gebrochenes Mosaikmuster, für den täglichen Gebrauch.",it:"Motivo a mosaico spezzato, per uso quotidiano.",pt:"Padrão de mosaico partido, para uso diário."}},
+  ];
+
+  const CATEGORY_ORDER = ["all","vape","eliquid","cbd","accessory","souvenir"];
+  const WHATSAPP_NUMBER = "34648757035";
+
+  function buildWhatsAppLink(message){
+    return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(message);
+  }
+
+  /* =====================================================
+     LANGUAGE STATE
+  ===================================================== */
+  function detectInitialLang(){
+    const navLangs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || "en"];
+    for(const l of navLangs){
+      const code = l.slice(0,2).toLowerCase();
+      if(LANGS.includes(code)) return code;
+    }
+    return "en";
+  }
+
+  let currentLang = detectInitialLang();
+  let currentCategoryFilter = "all";
+
+  function renderLangMenu(){
+    const menu = document.getElementById("langMenu");
+    menu.innerHTML = "";
+    LANGS.forEach(code=>{
+      const btn = document.createElement("button");
+      btn.className = "lang-option" + (code===currentLang ? " active" : "");
+      btn.setAttribute("role","menuitem");
+      btn.textContent = LANG_NAMES[code];
+      btn.addEventListener("click", ()=>{
+        applyLanguage(code);
+        document.getElementById("langSwitch").classList.remove("open");
+      });
+      menu.appendChild(btn);
+    });
+    document.getElementById("langBtnLabel").textContent = currentLang.toUpperCase();
+  }
+
+  const BADGE_ICONS = [
+    // local first — map pin
+    '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3" stroke="currentColor" stroke-width="1.6"/></svg>',
+    // curated not cluttered — layered squares
+    '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="11" y="11" width="9" height="9" rx="1" stroke="currentColor" stroke-width="1.6"/></svg>',
+    // no tourist tax — crossed-out tag
+    '<svg viewBox="0 0 24 24" fill="none"><path d="M20 13.5 12.5 21 3 11.5V4h7.5L20 13.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"/><path d="M4 20 20 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    // take Barcelona home — bag
+    '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l1 12H5L6 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.6"/></svg>'
+  ];
+
+  function renderBadges(){
+    const row = document.getElementById("badgeRow");
+    row.innerHTML = "";
+    UI[currentLang].badges.forEach((text,i)=>{
+      const item = document.createElement("div");
+      item.className = "badge-item";
+      item.innerHTML = BADGE_ICONS[i] + "<span>" + text + "</span>";
+      row.appendChild(item);
+    });
+  }
+
+  function renderChips(){
+    const chipRow = document.getElementById("chipRow");
+    chipRow.innerHTML = "";
+    CATEGORY_ORDER.forEach(cat=>{
+      const btn = document.createElement("button");
+      btn.className = "chip" + (cat===currentCategoryFilter ? " active" : "");
+      btn.textContent = UI[currentLang].categories[cat];
+      btn.dataset.filter = cat;
+      btn.addEventListener("click", ()=>{
+        currentCategoryFilter = cat;
+        document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter(cat);
+      });
+      chipRow.appendChild(btn);
+    });
+  }
+
+  function renderCards(){
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+    PRODUCTS.forEach(p=>{
+      const name = p.name[currentLang];
+      const blurb = p.blurb[currentLang];
+      const a = document.createElement("a");
+      a.className = "card";
+      a.dataset.category = p.category;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.href = buildWhatsAppLink(UI[currentLang].whatsappProductTemplate.replace("{product}", name));
+
+      const newTag = p.isNew ? '<span class="card-new-tag">' + UI[currentLang].newBadge + '</span>' : '';
+
+      a.innerHTML =
+        '<div class="card-photo">' +
+          '<span class="card-tag">' + UI[currentLang].categories[p.category] + '</span>' +
+          newTag +
+          '<img src="' + p.img + '.jpg" alt="' + name + '" loading="lazy" onerror="this.onerror=null;this.src=\'1.jpg\';">' +
+        '</div>' +
+        '<div class="card-body">' +
+          '<p class="card-name">' + name + '</p>' +
+          '<p class="card-blurb">' + blurb + '</p>' +
+        '</div>';
+      grid.appendChild(a);
+    });
+    applyFilter(currentCategoryFilter);
+  }
+
+  function applyFilter(cat){
+    document.querySelectorAll(".card").forEach(card=>{
+      const show = cat==="all" || card.dataset.category === cat;
+      card.style.display = show ? "" : "none";
+    });
+  }
+
+  function applyLanguage(lang){
+    currentLang = lang;
+    const t = UI[lang];
+    document.documentElement.setAttribute("lang", lang);
+    document.getElementById("pageTitle").textContent = t.metaTitle;
+    document.getElementById("pageDescription").setAttribute("content", t.metaDescription);
+
+    document.getElementById("taglineText").textContent = t.tagline;
+    document.getElementById("gateQuestionText").textContent = t.gateQuestion;
+    document.getElementById("gateSubText").textContent = t.gateSub;
+    document.getElementById("gateYes").textContent = t.gateYes;
+    document.getElementById("gateNo").textContent = t.gateNo;
+    document.getElementById("gateBlockedTitleText").textContent = t.gateBlockedTitle;
+    document.getElementById("gateBlockedTextText").textContent = t.gateBlockedText;
+    document.getElementById("askUsTextText").textContent = t.askUsText;
+    document.getElementById("askUsLink").textContent = t.askUsLink;
+    document.getElementById("footerNeighborhoodsText").textContent = t.footerNeighborhoods;
+    document.getElementById("footerLegalText").textContent = t.footerLegal;
+    document.getElementById("askUsLink").href = buildWhatsAppLink(t.whatsappGeneral);
+
+    const themeIsDark = document.documentElement.getAttribute("data-theme") === "dark";
+    document.getElementById("themeLabel").textContent = themeIsDark ? t.themeToLight : t.themeToDark;
+
+    renderLangMenu();
+    renderBadges();
+    renderChips();
+    renderCards();
+  }
+
+  /* =====================================================
+     LANGUAGE MENU OPEN/CLOSE
+  ===================================================== */
+  const langSwitch = document.getElementById("langSwitch");
+  document.getElementById("langBtn").addEventListener("click", (e)=>{
+    e.stopPropagation();
+    langSwitch.classList.toggle("open");
+  });
+  document.addEventListener("click", (e)=>{
+    if(!langSwitch.contains(e.target)) langSwitch.classList.remove("open");
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") langSwitch.classList.remove("open");
+  });
+
+  /* =====================================================
+     THEME
+  ===================================================== */
+  function detectInitialTheme(){
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+  let currentTheme = detectInitialTheme();
+
+  function applyTheme(theme){
+    currentTheme = theme;
+    document.documentElement.setAttribute("data-theme", theme);
+    const isDark = theme === "dark";
+    document.getElementById("themeIconMoon").style.display = isDark ? "none" : "inline-flex";
+    document.getElementById("themeIconSun").style.display = isDark ? "inline-flex" : "none";
+    document.getElementById("themeLabel").textContent = isDark ? UI[currentLang].themeToLight : UI[currentLang].themeToDark;
+  }
+
+  document.getElementById("themeBtn").addEventListener("click", ()=>{
+    applyTheme(currentTheme === "dark" ? "light" : "dark");
+  });
+
+  /* =====================================================
+     AGE GATE
+  ===================================================== */
+  const ageGate = document.getElementById("ageGate");
+  document.getElementById("gateYes").addEventListener("click", ()=>{
+    ageGate.classList.add("hidden");
+    document.body.classList.remove("locked");
+  });
+  document.getElementById("gateNo").addEventListener("click", ()=>{
+    document.getElementById("gateAsk").style.display = "none";
+    document.getElementById("gateBlocked").classList.add("show");
+  });
+
+  /* =====================================================
+     INIT
+  ===================================================== */
+  applyTheme(currentTheme);
+  applyLanguage(currentLang);
+</script>
+</body>
+</html>
