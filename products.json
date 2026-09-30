@@ -1,5 +1,30 @@
 [
  {
+  "id": "nmuorhgvk2bop",
+  "img": "p-muorhgvkaqti",
+  "category": "cbd",
+  "subcategory": "gummies",
+  "isNew": true,
+  "name": {
+   "en": "Test product"
+  },
+  "blurb": {
+   "en": "Test description",
+   "es": "Descripción de prueba",
+   "ca": "Descripció de la prova",
+   "fr": "Test Description",
+   "de": "Testbeschreibung",
+   "it": "Descrizione del test",
+   "pt": "Descrição do teste",
+   "zh": "测试描述",
+   "ar": "اختبار شرح",
+   "ru": "Тест Описание",
+   "nl": "Test beschrijving",
+   "ja": "テスト 説明",
+   "ur": "ٹیسٹ کی تفصیل"
+  }
+ },
+ {
   "id": "p001",
   "img": "1",
   "category": "vape",
