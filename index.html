@@ -265,7 +265,7 @@
     position:absolute;inset:0;opacity:0;transition:opacity .5s ease;
   }
   .hero-slide.active{opacity:1;}
-  .hero-slide img{width:100%;height:100%;object-fit:cover;}
+  .hero-slide img,.hero-slide video{width:100%;height:100%;object-fit:cover;display:block;}
   .hero-slide-caption{
     position:absolute;left:0;right:0;bottom:0;
     padding:18px 22px;
@@ -837,7 +837,7 @@
 
   const UI = {
     en:{
-      tagline:"Barcelona's local vape and CBD shop — no tourist markup, no dusty stock. Test1",
+      tagline:"Barcelona's local vape and CBD shop — no tourist markup, no dusty stock.",
       gateQuestion:"Are you 18 or older?",
       gateSub:"This site lists vaping, CBD and smoking accessories for adults.",
       gateYes:"Yes, I'm 18+", gateNo:"No",
@@ -1737,9 +1737,13 @@
 
   /* =====================================================
      HERO CAROUSEL
-     Photos live in a "carousel" folder next to this file,
-     named 1.jpg, 2.jpg, 3.jpg ... To add a slide, copy one
-     block below and drop the matching numbered photo in.
+     Drop photos or videos into the "carousel" folder next to
+     this file, numbered in order: 1.jpg, 2.mp4, 3.png, 4.webp ...
+     The page finds them automatically, however many you add.
+     Formats: jpg jpeg png webp mp4 webm (one file per number,
+     no gaps in the numbering).
+     Captions are optional: an entry below with img:2 is shown on
+     file "2.*". Files with no entry just show without a caption.
   ===================================================== */
   const SLIDES = [
     {img:1,
@@ -1750,23 +1754,109 @@
      subtext:{en:"One price, every customer, always.",es:"Un precio, para todos los clientes, siempre.",ca:"Un preu, per a tots els clients, sempre.",fr:"Un seul prix, pour tous les clients, toujours.",de:"Ein Preis, für alle Kunden, immer.",it:"Un prezzo, per tutti i clienti, sempre.",pt:"Um preço, para todos os clientes, sempre.",zh:"同一个价格,所有顾客,始终如一。",ar:"سعر واحد، لكل عميل، دائمًا.",ru:"Одна цена для всех, всегда.",nl:"Eén prijs, voor elke klant, altijd.",ja:"誰であっても、いつでも同じ価格。",ur:"ایک قیمت، ہر گاہک کے لیے، ہمیشہ۔"}},
   ];
 
+  const HERO_EXTS = ["jpg","jpeg","png","webp","mp4","webm"];
+  const HERO_MAX = 60;               // safety cap on how many files are scanned
+  const HERO_IMG_MS = 5500;          // how long each photo stays
+  const HERO_VIDEO_MAX_MS = 90000;   // fallback if a video never reports "ended"
+  let heroItems = [];
   let heroIndex = 0;
   let heroTimer = null;
+  let heroDiscoveryStarted = false;
   const heroReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const isVideoExt = e => e === "mp4" || e === "webm";
+
+  function probeImage(url){
+    return new Promise(res=>{
+      const i = new Image();
+      i.onload = ()=>res(true);
+      i.onerror = ()=>res(false);
+      i.src = url;
+    });
+  }
+  function probeVideoEl(url){
+    return new Promise(res=>{
+      const v = document.createElement("video");
+      let done = false;
+      const fin = ok=>{ if(done) return; done = true; v.removeAttribute("src"); v.load(); res(ok); };
+      v.preload = "metadata"; v.muted = true;
+      v.onloadedmetadata = ()=>fin(true);
+      v.onerror = ()=>fin(false);
+      setTimeout(()=>fin(false), 12000);
+      v.src = url;
+    });
+  }
+  // HEAD request checks existence without downloading the video; falls back to a
+  // metadata probe when fetch is unavailable (e.g. opening the file straight from disk).
+  function probeVideo(url){
+    return fetch(url,{method:"HEAD"})
+      .then(r=>r.ok && !/text\/html/i.test(r.headers.get("content-type") || ""))
+      .catch(()=>probeVideoEl(url));
+  }
+
+  async function findHeroFile(n){
+    const found = await Promise.all(HERO_EXTS.map(ext=>{
+      const url = "carousel/" + n + "." + ext;
+      const video = isVideoExt(ext);
+      return (video ? probeVideo(url) : probeImage(url)).then(ok=> ok ? {n:n, url:url, video:video} : null);
+    }));
+    return found.find(Boolean) || null;
+  }
+
+  // Walks 1, 2, 3 ... and stops at the first number with no file.
+  async function discoverHeroMedia(){
+    for(let n=1; n<=HERO_MAX; n++){
+      const f = await findHeroFile(n);
+      if(!f) break;
+      heroItems.push(f);
+      renderHeroCarousel();
+      if(heroItems.length === 1) syncHeroMedia();
+      if(heroItems.length === 2){ syncHeroMedia(); restartHeroTimer(); }
+    }
+  }
+
   function renderHeroCarousel(){
+    if(!heroDiscoveryStarted){ heroDiscoveryStarted = true; discoverHeroMedia(); }
     const track = document.getElementById("heroTrack");
-    track.innerHTML = "";
-    SLIDES.forEach((s,i)=>{
-      const div = document.createElement("div");
-      div.className = "hero-slide" + (i===heroIndex ? " active" : "");
-      div.innerHTML =
-        '<img src="carousel/' + s.img + '.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'carousel/1.jpg\';">' +
-        '<div class="hero-slide-caption">' +
-          '<p class="hero-slide-heading">' + s.heading[currentLang] + '</p>' +
-          '<p class="hero-slide-subtext">' + s.subtext[currentLang] + '</p>' +
-        '</div>';
-      track.appendChild(div);
+    heroItems.forEach((it,i)=>{
+      let div = track.children[i];
+      if(!div){
+        div = document.createElement("div");
+        div.className = "hero-slide" + (i===heroIndex ? " active" : "");
+        let media;
+        if(it.video){
+          media = document.createElement("video");
+          media.muted = true; media.defaultMuted = true; media.playsInline = true;
+          media.setAttribute("muted",""); media.setAttribute("playsinline","");
+          media.preload = i===0 ? "auto" : "metadata";
+          media.src = it.url;
+          if(heroReducedMotion) media.controls = true;
+          const next = ()=>{ if(heroIndex===i && heroItems.length>1) goToSlide(i+1); };
+          media.addEventListener("ended", next);
+          media.addEventListener("error", next);
+        } else {
+          media = document.createElement("img");
+          media.alt = "";
+          if(i>0) media.loading = "lazy";
+          media.src = it.url;
+        }
+        div.appendChild(media);
+        const cap = document.createElement("div");
+        cap.className = "hero-slide-caption";
+        div.appendChild(cap);
+        track.appendChild(div);
+      }
+      // captions (also refreshed on language change)
+      const s = SLIDES.find(x=>x.img===it.n);
+      const cap = div.querySelector(".hero-slide-caption");
+      if(s){
+        cap.hidden = false;
+        cap.innerHTML =
+          '<p class="hero-slide-heading">' + (s.heading[currentLang] || s.heading.en) + '</p>' +
+          '<p class="hero-slide-subtext">' + (s.subtext[currentLang] || s.subtext.en) + '</p>';
+      } else {
+        cap.hidden = true;
+      }
     });
     renderHeroDots();
   }
@@ -1774,8 +1864,8 @@
   function renderHeroDots(){
     const dots = document.getElementById("heroDots");
     dots.innerHTML = "";
-    if(SLIDES.length < 2) return;
-    SLIDES.forEach((_,i)=>{
+    if(heroItems.length < 2) return;
+    heroItems.forEach((_,i)=>{
       const b = document.createElement("button");
       b.className = "hero-dot" + (i===heroIndex ? " active" : "");
       b.setAttribute("aria-label", "Slide " + (i+1));
@@ -1784,18 +1874,42 @@
     });
   }
 
+  // Plays the visible video, pauses and rewinds the rest.
+  function syncHeroMedia(){
+    document.querySelectorAll(".hero-slide").forEach((el,idx)=>{
+      const v = el.querySelector("video");
+      if(!v) return;
+      v.loop = heroItems.length < 2;
+      if(idx === heroIndex){
+        if(heroReducedMotion) return;
+        const p = v.play();
+        if(p && p.catch) p.catch(()=>{
+          // autoplay blocked (e.g. battery saver): don't wait for the video, move on like a photo
+          if(heroIndex===idx && heroItems.length>1){ clearTimeout(heroTimer); heroTimer = setTimeout(()=>goToSlide(heroIndex+1), HERO_IMG_MS); }
+        });
+      } else {
+        v.pause();
+        try{ v.currentTime = 0; }catch(e){}
+      }
+    });
+  }
+
   function goToSlide(i){
-    if(SLIDES.length === 0) return;
-    heroIndex = (i + SLIDES.length) % SLIDES.length;
+    if(heroItems.length === 0) return;
+    heroIndex = (i + heroItems.length) % heroItems.length;
     document.querySelectorAll(".hero-slide").forEach((el,idx)=>el.classList.toggle("active", idx===heroIndex));
     document.querySelectorAll(".hero-dot").forEach((el,idx)=>el.classList.toggle("active", idx===heroIndex));
+    syncHeroMedia();
     restartHeroTimer();
   }
 
+  // Photos advance on a timer; videos advance when they finish (timer is only a safety net).
   function restartHeroTimer(){
-    clearInterval(heroTimer);
-    if(heroReducedMotion || SLIDES.length < 2) return;
-    heroTimer = setInterval(()=>goToSlide(heroIndex+1), 5500);
+    clearTimeout(heroTimer);
+    if(heroReducedMotion || heroItems.length < 2) return;
+    const it = heroItems[heroIndex];
+    const wait = (it && it.video) ? HERO_VIDEO_MAX_MS : HERO_IMG_MS;
+    heroTimer = setTimeout(()=>goToSlide(heroIndex+1), wait);
   }
 
   document.getElementById("heroPrev").addEventListener("click", ()=>goToSlide(heroIndex-1));
