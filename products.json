@@ -372,24 +372,12 @@
  },
  {
   "id": "p010",
-  "img": "10",
+  "img": "p-mupgg4htdqmv",
   "category": "vape",
   "subcategory": "hardware",
   "isNew": false,
   "name": {
-   "en": "Battery & Charger",
-   "es": "Batería y cargador",
-   "ca": "Bateria i carregador",
-   "fr": "Batterie et chargeur",
-   "de": "Akku & Ladegerät",
-   "it": "Batteria e caricatore",
-   "pt": "Bateria e carregador",
-   "zh": "电池与充电器",
-   "ar": "بطارية وشاحن",
-   "ru": "Батарея и зарядное устройство",
-   "nl": "Batterij & oplader",
-   "ja": "バッテリー&充電器",
-   "ur": "بیٹری اور چارجر"
+   "en": "Battery"
   },
   "blurb": {
    "en": "Reliable power, the boring part done right.",
