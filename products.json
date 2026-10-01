@@ -273,24 +273,11 @@
  },
  {
   "id": "p007",
-  "img": "7",
-  "category": "vape",
-  "subcategory": "hardware",
+  "img": "p-mupgldx3g8uz",
+  "category": "accessory",
   "isNew": false,
   "name": {
-   "en": "VooPoo Box Mod",
-   "es": "Mod tipo box VooPoo",
-   "ca": "Mod tipus box VooPoo",
-   "fr": "Box mod VooPoo",
-   "de": "VooPoo Box-Mod",
-   "it": "Box mod VooPoo",
-   "pt": "Box mod VooPoo",
-   "zh": "VooPoo 主机(Box Mod)",
-   "ar": "جهاز Box Mod من VooPoo",
-   "ru": "Бокс-мод VooPoo",
-   "nl": "VooPoo Box Mod",
-   "ja": "VooPoo ボックスMOD",
-   "ur": "VooPoo باکس موڈ"
+   "en": "G T X Coils"
   },
   "blurb": {
    "en": "Adjustable power for people who like control.",
