@@ -754,24 +754,12 @@
  },
  {
   "id": "p021",
-  "img": "21",
+  "img": "p-mupl2o322lbv",
   "category": "cbd",
   "subcategory": "other",
   "isNew": false,
   "name": {
-   "en": "CBD Capsules",
-   "es": "Cápsulas de CBD",
-   "ca": "Càpsules de CBD",
-   "fr": "Gélules de CBD",
-   "de": "CBD-Kapseln",
-   "it": "Capsule di CBD",
-   "pt": "Cápsulas de CBD",
-   "zh": "CBD 胶囊",
-   "ar": "كبسولات CBD",
-   "ru": "Капсулы CBD",
-   "nl": "CBD-capsules",
-   "ja": "CBDカプセル",
-   "ur": "CBD کیپسولز"
+   "en": "CBD pre-roll"
   },
   "blurb": {
    "en": "Pre-measured, no dropper needed.",
