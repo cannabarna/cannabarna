@@ -347,24 +347,12 @@
  },
  {
   "id": "p009",
-  "img": "9",
+  "img": "p-mupgdixw7s1j",
   "category": "vape",
   "subcategory": "hardware",
   "isNew": false,
   "name": {
-   "en": "Replacement Coils",
-   "es": "Resistencias de repuesto",
-   "ca": "Resistències de recanvi",
-   "fr": "Résistances de rechange",
-   "de": "Ersatz-Coils",
-   "it": "Resistenze di ricambio",
-   "pt": "Resistências de substituição",
-   "zh": "替换雾化芯",
-   "ar": "كويلات بديلة",
-   "ru": "Сменные испарители (койлы)",
-   "nl": "Vervangende coils",
-   "ja": "交換用コイル",
-   "ur": "متبادل کوائلز"
+   "en": "Replacement Pods"
   },
   "blurb": {
    "en": "Fits most major brands, ask which one you need.",
