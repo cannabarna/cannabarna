@@ -901,38 +901,26 @@
  },
  {
   "id": "p024",
-  "img": "24",
+  "img": "p-mupe83gy6b8k",
   "category": "accessory",
   "isNew": false,
   "name": {
-   "en": "Rolling Papers",
-   "es": "Papel de fumar",
-   "ca": "Paper de fumar",
-   "fr": "Feuilles à rouler",
-   "de": "Zigarettenpapier",
-   "it": "Cartine",
-   "pt": "Mortalhas",
-   "zh": "卷烟纸",
-   "ar": "ورق لف",
-   "ru": "Курительная бумага",
-   "nl": "Vloeipapier",
-   "ja": "巻紙",
-   "ur": "رولنگ پیپرز"
+   "en": "Raw Rolling Papers"
   },
   "blurb": {
-   "en": "Thin, clean burn, no weird aftertaste.",
-   "es": "Fino, quema limpia, sin sabores raros.",
-   "ca": "Prim, cremada neta, sense gustos rars.",
-   "fr": "Fines, combustion propre, aucun arrière-goût.",
-   "de": "Dünn, sauberer Abbrand, kein komischer Nachgeschmack.",
-   "it": "Sottili, combustione pulita, nessun retrogusto strano.",
-   "pt": "Finas, combustão limpa, sem sabor estranho.",
-   "zh": "纸质轻薄,燃烧干净,无怪异余味。",
-   "ar": "رقيق، احتراق نظيف، بدون طعم غريب لاحق.",
-   "ru": "Тонкая, чистое горение, без странного послевкусия.",
-   "nl": "Dun, schoon verbrandend, geen vreemde nasmaak.",
-   "ja": "薄くてクリーンな燃焼、変な後味なし。",
-   "ur": "پتلا، صاف جلنا، عجیب ذائقہ نہیں۔"
+   "en": "Raw Rowlling Paper With Tips , Tray",
+   "es": "Raw Rolling Paper con Tips, Tray",
+   "ca": "Paper de roure brut amb consells, Tray",
+   "fr": "Papier de roulement brut avec des astuces, Tray",
+   "de": "Roh-Rolling-Papier mit Tipps, Tray",
+   "it": "Raw Rolling Paper Con Suggerimenti, Tray",
+   "pt": "Papel de rolagem com dicas, Tray",
+   "zh": "Raw Rowlling 纸 与 提示 , Tray",
+   "ar": "ورق الصلب مع النصائح , Tray",
+   "ru": "Роллинговая бумага с советами, Tray",
+   "nl": "Raw Rolling Paper met Tips, Tray",
+   "ja": "Raw Rowlling Paper With Tips, Tray シングル",
+   "ur": "Raw Rowlling Paper With Tips، ٹری"
   }
  },
  {
