@@ -1415,42 +1415,6 @@
   }
  },
  {
-  "id": "p040",
-  "img": "40",
-  "category": "souvenir",
-  "isNew": true,
-  "name": {
-   "en": "Enamel Patch",
-   "es": "Parche bordado",
-   "ca": "Pedaç brodat",
-   "fr": "Écusson brodé",
-   "de": "Gestickter Patch",
-   "it": "Toppa ricamata",
-   "pt": "Emblema bordado",
-   "zh": "珐琅徽章",
-   "ar": "شارة مطرزة",
-   "ru": "Эмалевый патч",
-   "nl": "Emaille patch",
-   "ja": "エナメルパッチ",
-   "ur": "اینامل پیچ"
-  },
-  "blurb": {
-   "en": "Sew it on, pin it up, take it home.",
-   "es": "Cóselo, engánchalo, llévatelo a casa.",
-   "ca": "Cus-lo, enganxa'l, emporta-te'l a casa.",
-   "fr": "À coudre, à épingler, à ramener chez soi.",
-   "de": "Aufnähen, anstecken, mit nach Hause nehmen.",
-   "it": "Da cucire, da appuntare, da portare a casa.",
-   "pt": "Cose, aplica, leva para casa.",
-   "zh": "缝上、别上,带回家。",
-   "ar": "اخيطها، ثبّتها، وخذها معك إلى المنزل.",
-   "ru": "Пришейте, приколите, увезите домой.",
-   "nl": "Naai 'm op, speld 'm vast, neem 'm mee naar huis.",
-   "ja": "縫い付けても、ピンで留めても、持ち帰ろう。",
-   "ur": "سیئیں، لگائیں، گھر لے جائیں۔"
-  }
- },
- {
   "id": "p041",
   "img": "41",
   "category": "souvenir",
